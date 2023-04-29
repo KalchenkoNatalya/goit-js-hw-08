@@ -1,62 +1,33 @@
-{
-  /* <iframe src="https://player.vimeo.com/video/76979871?h=8272103f6e" width="640" height="360" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe> */
-}
-
-{
-  /* <script src="https://player.vimeo.com/api/player.js"></script> */
-}
+import throttle from 'lodash.throttle';
 import Player from '@vimeo/player';
 
+const LOCALSTORAGE_KEY = 'videoplayer-current-time';
+
 const iframe = document.querySelector('iframe');
-console.log(iframe);
-
 const player = new Player(iframe);
-// const player = new Vimeo.Player(iframe);
 
-player.on('play', function (e) {
-  console.dir(e);
-});
-// player.on('ended', function() {
-//     console.log('ended the video!');
-// });
-const LOCALSTORAGE_KEY = "videoplayer-current-time";
-player.on('timeupdate', function (e) {
-  const time = e.seconds;
+player.on('timeupdate', throttle(onTimeupdate, 1000));
+function onTimeupdate(evt) {
+  const time = evt.seconds;
   console.log(time);
   localStorage.setItem(LOCALSTORAGE_KEY, time);
-});
+}
 
+const savedTime = localStorage.getItem(LOCALSTORAGE_KEY);
+console.log(savedTime);
+player
+  .setCurrentTime(savedTime)
+  .then(function (seconds) {
+    // seconds = the actual time that the player seeked to
+  })
+  .catch(function (error) {
+    switch (error.name) {
+      case 'RangeError':
+        // the time was less than 0 or greater than the video’s duration
+        break;
 
-// player.on('timeupdate', function ({seconds}) {
-//   setItem("videoplayer-current-time", seconds)
-//   })
-//  )
-//  setInterval(function () {
-
-//     player.getCurrentTime().then(function(seconds) {
-   
-//         console.log( seconds, "current seconds " );
-
-//     });
-//         console.log('it works' + new Date());
-// },1000);
-
-
-// player.on('timeupdate', function(data) {
-//     console.log('Percentage watched: '+data.seconds);
-//     if (data.seconds == 3.106) {
-//         console.log('3 sec of video watched');
-//      }
-// });
-// player.getVideoTitle().then(function(title) {
-//     console.log('title:', title);
-// });
-
-//  require(['https://player.vimeo.com/api/player.js'], function (Player) {
-//         const iframe = document.querySelector('iframe');
-//         const player = new Player(iframe);
-
-//         player.on('play', function() {
-//             console.log('played the video!');
-//         });
-//     });
+      default:
+        // some other error occurred
+        break;
+    }
+  });

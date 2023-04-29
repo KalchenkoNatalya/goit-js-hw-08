@@ -7,12 +7,12 @@ const refs = {
 };
 
 const formData = {};
-loadPage();
+downloadPage();
 
 refs.form.addEventListener('input', throttle(onFormInput, 1000));
 refs.form.addEventListener('submit', onFormSubmit);
 
-function loadPage() {
+function downloadPage() {
   const savedMassege = localStorage.getItem('feedback-form-state');
 
   if (savedMassege) {
@@ -24,20 +24,19 @@ function loadPage() {
 
 function onFormInput(evt) {
   formData[evt.target.name] = evt.target.value;
-  console.log(formData);
   localStorage.setItem('feedback-form-state', JSON.stringify(formData));
 }
 
 function onFormSubmit(evt) {
   evt.preventDefault();
-  console.log('send form');
+  // console.log('send form');
   const email = evt.currentTarget.elements.email.value;
   const message = evt.currentTarget.elements.message.value;
-  const sendData = {
+  const sentData = {
     email,
     message,
   };
-  console.log(sendData);
+  console.log(sentData);
   evt.currentTarget.reset();
   localStorage.removeItem('feedback-form-state');
 }
