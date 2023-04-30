@@ -29,7 +29,6 @@ function onFormInput(evt) {
 
 function onFormSubmit(evt) {
   evt.preventDefault();
-  // console.log('send form');
   const email = evt.currentTarget.elements.email.value;
   const message = evt.currentTarget.elements.message.value;
   const sentData = {
